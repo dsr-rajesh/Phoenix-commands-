@@ -1,4 +1,4 @@
-#Basic useful commands:
+#Complete List of Phoenix sqlline commands:
 SQLLINE COMMANDS
 !tables             Displays all tables along with related schemas
 !all                Execute the specified SQL against all the current connections
@@ -43,49 +43,3 @@ SQLLINE COMMANDS
 
 Ref: http://sqlline.sourceforge.net/
 ----------------------------------------------------------------------
-DB COMMANDS
---------------
-CREATE TABLE my_phoenix_table (col1 VARCHAR NOT NULL PRIMARY KEY, col2 VARCHAR); - To create table 
-UPSERT INTO my_phoenix_table VALUES ('DSR', 'my_phoenix_table_name'); - Insert data to table
-SELECT * FROM my_phoenix_table LIMIT 1000; - selects all columns from my_table limiting the result set to 1000 records
-CREATE INDEX indx_modified_on ON sales.opportunity(last_updated_date DESC) - Creates a secondary index on a table or view.  
-DROP TABLE IF EXISTS <my_phoenix_table>; - To drop the table
-
-Ref: https://phoenix.apache.org/language/index.html 
-
------------------------------------------
-#Apache Phoenix : 
-Phoenix is an open source SQL skin for HBase. You use the standard JDBC APIs instead of the regular HBase client APIs to create tables, 
-insert data, and query your HBase data.
-
-#How it works:
-Apache Phoenix abstract away the underlying data store by enable you to query the data with standard SQL via JDBC driver. 
-Apache Phoenix provides features such as secondary indexes to help you speed up the queries without relying on specific row key designs
-
-#performance is much better than hand code bcz
-.compiling your SQL queries to native HBase scans
-.determining the optimal start and stop for your scan key
-.orchestrating the parallel execution of your scans
-.bringing the computation to the data by
-.pushing the predicates in your where clause to a server-side filter
-.executing aggregate queries through server-side hooks (called co-processors)
-In addition to these items, we’ve got some interesting enhancements in the works to further optimize performance:
-.secondary indexes to improve performance for queries on non row key columns
-.stats gathering to improve parallelization and guide choices between optimizations
-.skip scan filter to optimize IN, LIKE, and OR queries
-.optional salting of row keys to evenly distribute write load
-
-
-#Why Phoenix Fast:
-.Apache Phoenix breaks up SQL queries into multiple HBase scans and runs them in parallel.
-.Phoenix is developed with notion of bringing the computation to the data by using:
-.Coprocessors to perform operations on the server-side thus minimizing client/server data transfer
-.Custom filters to prune data as close to the source as possible In addition, to minimize any start up cost.
-.Phoenix uses native HBase APIs rather than going through the mapreduce framework.
-.Phoenix leverages below HBase custom filters to provide higher performance.
-.Essential Column Family filter leads to improved performance when Phoenix query filters on data that is split in multiple column families (cf) by only loading essential cf. In second pass, all cf are loaded as needed.
-.Phoenix’s Skip Scan Filter leverages SEEK_NEXT_USING_HINT of HBase Filter. It significantly improves point queries over key columns.
-.Salting in Phoenix leads to both improved read and write performance by adding an extra hash byte at start of key and pre-splitting data in number of regions. This eliminates hot-spotting of single or few regions servers
-.In single line, we can say that Direct use of the HBase API, along with coprocessors and custom filters, results in performance on the order of milliseconds for small queries, or seconds for tens of millions of rows.
-
-
